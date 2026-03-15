@@ -1,0 +1,10 @@
+import api from "./api";
+
+export const userService = {
+
+  getUsers: async () => {
+    const res = await api.get("/users");
+    return res.data;
+  },
+
+};

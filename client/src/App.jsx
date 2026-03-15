@@ -21,7 +21,7 @@ import Sidebar from "./components/Sidebar";
 
 function Layout({ sidebarOpen, setSidebarOpen, handleDrawerToggle }) {
   return (
-    <div className="layout">
+    <div className={`layout ${sidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
       
       <Navbar handleDrawerToggle={handleDrawerToggle} />
 

@@ -1,5 +1,6 @@
 .clients-container {
   padding: 24px;
+   margin-top: 50px; /* header height + spacing */
   background: #f7fafc;
   min-height: 100vh;
 }

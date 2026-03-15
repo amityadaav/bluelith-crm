@@ -1,213 +1,119 @@
-// const Lead = require('../models/Lead');
+// import Lead from "../models/Lead.js"
 
-// // @desc    Get all leads
-// // @route   GET /api/leads
-// const getLeads = async (req, res) => {
-//   try {
-//     const leads = await Lead.find({ createdBy: req.user.id })
-//       .sort({ createdAt: -1 });
-//     res.json({
-//       success: true,
-//       count: leads.length,
-//       data: leads
-//     });
-//   } catch (error) {
-//     res.status(500).json({ 
-//       success: false,
-//       message: error.message 
-//     });
-//   }
-// };
+// export const createLead = async(req,res)=>{
 
-// // @desc    Get single lead
-// // @route   GET /api/leads/:id
-// const getLead = async (req, res) => {
-//   try {
-//     const lead = await Lead.findById(req.params.id);
-    
-//     if (!lead) {
-//       return res.status(404).json({ 
-//         success: false,
-//         message: 'Lead not found' 
-//       });
-//     }
-    
-//     // Check ownership
-//     if (lead.createdBy.toString() !== req.user.id) {
-//       return res.status(403).json({ 
-//         success: false,
-//         message: 'Not authorized to access this lead' 
-//       });
-//     }
-    
-//     res.json({
-//       success: true,
-//       data: lead
-//     });
-//   } catch (error) {
-//     res.status(500).json({ 
-//       success: false,
-//       message: error.message 
-//     });
-//   }
-// };
+// try{
 
-// // @desc    Create lead
-// // @route   POST /api/leads
-// const createLead = async (req, res) => {
-//   try {
-//     const { name, email, phone, company, status, notes } = req.body;
-    
-//     const lead = await Lead.create({
-//       name,
-//       email,
-//       phone,
-//       company,
-//       status,
-//       notes,
-//       createdBy: req.user.id
-//     });
-    
-//     res.status(201).json({
-//       success: true,
-//       data: lead
-//     });
-//   } catch (error) {
-//     if (error.name === 'ValidationError') {
-//       const messages = Object.values(error.errors).map(val => val.message);
-//       return res.status(400).json({
-//         success: false,
-//         message: messages.join(', ')
-//       });
-//     }
-//     res.status(500).json({ 
-//       success: false,
-//       message: error.message 
-//     });
-//   }
-// };
+// const lead = new Lead(req.body)
 
-// // @desc    Update lead
-// // @route   PUT /api/leads/:id
-// const updateLead = async (req, res) => {
-//   try {
-//     let lead = await Lead.findById(req.params.id);
-    
-//     if (!lead) {
-//       return res.status(404).json({ 
-//         success: false,
-//         message: 'Lead not found' 
-//       });
-//     }
-    
-//     // Check ownership
-//     if (lead.createdBy.toString() !== req.user.id) {
-//       return res.status(403).json({ 
-//         success: false,
-//         message: 'Not authorized to update this lead' 
-//       });
-//     }
-    
-//     lead = await Lead.findByIdAndUpdate(
-//       req.params.id,
-//       req.body,
-//       { new: true, runValidators: true }
-//     );
-    
-//     res.json({
-//       success: true,
-//       data: lead
-//     });
-//   } catch (error) {
-//     if (error.name === 'ValidationError') {
-//       const messages = Object.values(error.errors).map(val => val.message);
-//       return res.status(400).json({
-//         success: false,
-//         message: messages.join(', ')
-//       });
-//     }
-//     res.status(500).json({ 
-//       success: false,
-//       message: error.message 
-//     });
-//   }
-// };
+// await lead.save()
 
-// // @desc    Delete lead
-// // @route   DELETE /api/leads/:id
-// const deleteLead = async (req, res) => {
-//   try {
-//     const lead = await Lead.findById(req.params.id);
-    
-//     if (!lead) {
-//       return res.status(404).json({ 
-//         success: false,
-//         message: 'Lead not found' 
-//       });
-//     }
-    
-//     // Check ownership
-//     if (lead.createdBy.toString() !== req.user.id) {
-//       return res.status(403).json({ 
-//         success: false,
-//         message: 'Not authorized to delete this lead' 
-//       });
-//     }
-    
-//     await lead.deleteOne();
-    
-//     res.json({
-//       success: true,
-//       message: 'Lead removed successfully'
-//     });
-//   } catch (error) {
-//     res.status(500).json({ 
-//       success: false,
-//       message: error.message 
-//     });
-//   }
-// };
+// res.status(201).json(lead)
 
-// module.exports = {
-//   getLeads,
-//   getLead,
-//   createLead,
-//   updateLead,
-//   deleteLead
-// };
+// }catch(error){
 
-import Lead from "../models/Lead.js"
+// res.status(500).json(error)
 
-export const createLead = async(req,res)=>{
+// }
 
-try{
+// }
 
-const lead = new Lead(req.body)
+// export const getLeads = async(req,res)=>{
 
-await lead.save()
+// try{
 
-res.status(201).json(lead)
+// const leads = await Lead.find()
 
-}catch(error){
+// res.json(leads)
 
-res.status(500).json(error)
+// }catch(error){
 
-}
+// res.status(500).json(error)
 
-}
+// }
 
-export const getLeads = async(req,res)=>{
+// }
 
-try{
+import Lead           from "../models/Lead.js";
+import Client         from "../models/Client.js";
+import { Activity }   from "../models/Notification.js";
 
-const leads = await Lead.find()
+const log = (type, desc, userId, userName, leadId) =>
+  Activity.create({ type, description: desc, user: userId, userName, relatedTo: { model: "Lead", id: leadId } });
 
-res.json(leads)
+export const getLeads = async (req, res, next) => {
+  try {
+    const filter = {};
+    if (req.user.role === "sales") filter.assignedTo = req.user._id;
+    if (req.query.status)     filter.status     = req.query.status;
+    if (req.query.priority)   filter.priority   = req.query.priority;
+    if (req.query.source)     filter.source     = req.query.source;
+    if (req.query.assignedTo) filter.assignedTo = req.query.assignedTo;
+    if (req.query.startDate || req.query.endDate) {
+      filter.createdAt = {};
+      if (req.query.startDate) filter.createdAt.$gte = new Date(req.query.startDate);
+      if (req.query.endDate)   filter.createdAt.$lte = new Date(req.query.endDate);
+    }
+    const leads = await Lead.find(filter).populate("assignedTo", "name email").sort({ createdAt: -1 });
+    res.json(leads);
+  } catch (error) { next(error); }
+};
 
-}catch(error){
+export const createLead = async (req, res, next) => {
+  try {
+    const lead = await Lead.create({ ...req.body, assignedTo: req.body.assignedTo || req.user._id });
+    await log("lead_created", `New lead "${lead.name}" was created`, req.user._id, req.user.name, lead._id);
+    res.status(201).json({ success: true, lead });
+  } catch (error) { next(error); }
+};
 
-res.status(500).json(error)
+export const getLeadById = async (req, res, next) => {
+  try {
+    const lead = await Lead.findById(req.params.id).populate("assignedTo", "name email phone");
+    if (!lead) return res.status(404).json({ message: "Lead not found." });
+    res.json(lead);
+  } catch (error) { next(error); }
+};
 
-}
+export const updateLead = async (req, res, next) => {
+  try {
+    const lead = await Lead.findById(req.params.id);
+    if (!lead) return res.status(404).json({ message: "Lead not found." });
+    const prevStatus = lead.status;
+    Object.assign(lead, req.body);
+    await lead.save();
+    await log("lead_updated", `Lead "${lead.name}" was updated`, req.user._id, req.user.name, lead._id);
+    if (prevStatus !== "won"  && lead.status === "won")
+      await log("lead_won",  `Lead "${lead.name}" was marked as WON 🎉`, req.user._id, req.user.name, lead._id);
+    if (prevStatus !== "lost" && lead.status === "lost")
+      await log("lead_lost", `Lead "${lead.name}" was marked as lost`,   req.user._id, req.user.name, lead._id);
+    res.json({ success: true, lead });
+  } catch (error) { next(error); }
+};
 
-}
+export const deleteLead = async (req, res, next) => {
+  try {
+    const lead = await Lead.findByIdAndDelete(req.params.id);
+    if (!lead) return res.status(404).json({ message: "Lead not found." });
+    res.json({ success: true, message: "Lead deleted successfully." });
+  } catch (error) { next(error); }
+};
+
+export const convertLead = async (req, res, next) => {
+  try {
+    const lead = await Lead.findById(req.params.id);
+    if (!lead) return res.status(404).json({ message: "Lead not found." });
+    if (lead.status !== "won")
+      return res.status(400).json({ message: "Only won leads can be converted to clients." });
+    if (await Client.findOne({ email: lead.email }))
+      return res.status(400).json({ message: "A client with this email already exists." });
+
+    const client = await Client.create({
+      name: lead.name, email: lead.email, phone: lead.phone,
+      company: lead.company || req.body.company || "Unknown",
+      assignedTo: lead.assignedTo, convertedFromLead: lead._id,
+    });
+    await log("client_created", `Lead "${lead.name}" converted to client`, req.user._id, req.user.name, lead._id);
+    res.status(201).json({ success: true, client });
+  } catch (error) { next(error); }
+};

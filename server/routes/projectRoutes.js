@@ -1,33 +1,40 @@
-// import express from "express"
-// import { createProject, getProjects } from "../controllers/projectController.js"
 
-// const router = express.Router()
+// import express from "express";
 
-// router.post("/add", createProject)
-// router.get("/", getProjects)
+// import {
+//   getProjects,
+//   createProject,
+//   updateStatus,
+//   deleteProject,
+//   addComment
+// } from "../controllers/projectController.js";
 
-// export default router
+// const router = express.Router();
 
-import express from "express";
+// router.get("/",getProjects);
 
-import {
-  getProjects,
-  createProject,
-  updateStatus,
-  deleteProject,
-  addComment
-} from "../controllers/projectController.js";
+// router.post("/",createProject);
 
-const router = express.Router();
+// router.put("/:id/status",updateStatus);
 
-router.get("/",getProjects);
+// router.delete("/:id",deleteProject);
 
-router.post("/",createProject);
+// router.post("/:id/comment",addComment);
 
-router.put("/:id/status",updateStatus);
+// export default router;
 
-router.delete("/:id",deleteProject);
+import { Router }                                                                          from "express";
+import { getProjects, createProject, getProjectById, updateProject, deleteProject, recordPayment } from "../controllers/projectController.js";
+import { protect, authorize }                                                              from "../middleware/authMiddleware.js";
 
-router.post("/:id/comment",addComment);
+const router = Router();
+router.use(protect);
+
+router.get("/",             getProjects);
+router.post("/",            authorize("admin", "sales"), createProject);
+router.get("/:id",          getProjectById);
+router.put("/:id",          authorize("admin", "sales"), updateProject);
+router.delete("/:id",       authorize("admin"),          deleteProject);
+router.post("/:id/payment", authorize("admin"),          recordPayment);
 
 export default router;

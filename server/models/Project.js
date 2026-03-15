@@ -1,143 +1,106 @@
-// const mongoose = require('mongoose');
+
+// import mongoose from "mongoose";
+
+// const commentSchema = new mongoose.Schema({
+//   text: String,
+//   createdAt: {
+//     type: Date,
+//     default: Date.now
+//   }
+// });
 
 // const projectSchema = new mongoose.Schema({
-//   name: {
-//     type: String,
-//     required: [true, 'Project name is required'],
-//     trim: true,
-//     maxlength: [100, 'Project name cannot exceed 100 characters']
+
+//   name:{
+//     type:String,
+//     required:true
 //   },
-//   description: {
-//     type: String,
-//     maxlength: [1000, 'Description cannot exceed 1000 characters']
+
+//   client:{
+//     type:String,
+//     required:true
 //   },
-//   client: {
-//     type: String,
-//     required: [true, 'Client name is required'],
-//     trim: true
+
+//   assignedDeveloper:{
+//     type:String
 //   },
-//   startDate: {
-//     type: Date
+
+//   totalBudget:{
+//     type:Number,
+//     default:0
 //   },
-//   endDate: {
-//     type: Date
+
+//   paid:{
+//     type:Number,
+//     default:0
 //   },
-//   status: {
-//     type: String,
-//     enum: {
-//       values: ['active', 'pending', 'completed', 'cancelled'],
-//       message: '{VALUE} is not a valid status'
-//     },
-//     default: 'active'
+
+//   remaining:{
+//     type:Number,
+//     default:0
 //   },
-//   budget: {
-//     type: Number,
-//     min: [0, 'Budget cannot be negative']
+
+//   deadline:{
+//     type:Date
 //   },
-//   createdBy: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'User',
-//     required: true
+
+//   status:{
+//     type:String,
+//     enum:["Pending","In Progress","Completed"],
+//     default:"Pending"
+//   },
+
+//   comments:[commentSchema],
+
+//   createdAt:{
+//     type:Date,
+//     default:Date.now
 //   }
-// }, {
-//   timestamps: true
+
 // });
 
-// // Validate that end date is after start date
-// projectSchema.pre('save', function(next) {
-//   if (this.startDate && this.endDate && this.endDate < this.startDate) {
-//     next(new Error('End date must be after start date'));
-//   }
-//   next();
-// });
-
-// // Index for better query performance
-// projectSchema.index({ status: 1 });
-// projectSchema.index({ client: 1 });
-// projectSchema.index({ createdAt: -1 });
-
-// module.exports = mongoose.model('Project', projectSchema);
-
-// import mongoose from "mongoose"
-
-// const ProjectSchema = new mongoose.Schema({
-
-// projectName:String,
-
-// client:{
-// type:mongoose.Schema.Types.ObjectId,
-// ref:"Client"
-// },
-
-// status:{
-// type:String,
-// default:"Pending"
-// },
-
-// deadline:Date
-
-// })
-
-// export default mongoose.model("Project",ProjectSchema)
+// export default mongoose.model("Project",projectSchema);
 
 import mongoose from "mongoose";
 
-const commentSchema = new mongoose.Schema({
-  text: String,
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
+const milestoneSchema = new mongoose.Schema({
+  title:       { type: String, required: true },
+  description: String,
+  dueDate:     Date,
+  amount:      { type: Number, default: 0 },
+  status:      { type: String, enum: ["pending", "in-progress", "completed", "invoiced", "paid"], default: "pending" },
 });
 
-const projectSchema = new mongoose.Schema({
-
-  name:{
-    type:String,
-    required:true
+const projectSchema = new mongoose.Schema(
+  {
+    name:        { type: String, required: [true, "Project name is required"], trim: true },
+    description: { type: String },
+    client:      { type: mongoose.Schema.Types.ObjectId, ref: "Client", required: [true, "Client is required"] },
+    clientName:  { type: String },
+    status:      { type: String, enum: ["pending", "active", "in-progress", "on-hold", "completed", "cancelled"], default: "pending" },
+    priority:    { type: String, enum: ["low", "medium", "high"], default: "medium" },
+    startDate:   { type: Date },
+    endDate:     { type: Date },
+    totalBudget: { type: Number, default: 0 },
+    paid:        { type: Number, default: 0 },
+    milestones:  [milestoneSchema],
+    assignedTo:  [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    tags:        [String],
+    notes:       { type: String },
   },
+  { timestamps: true }
+);
 
-  client:{
-    type:String,
-    required:true
-  },
-
-  assignedDeveloper:{
-    type:String
-  },
-
-  totalBudget:{
-    type:Number,
-    default:0
-  },
-
-  paid:{
-    type:Number,
-    default:0
-  },
-
-  remaining:{
-    type:Number,
-    default:0
-  },
-
-  deadline:{
-    type:Date
-  },
-
-  status:{
-    type:String,
-    enum:["Pending","In Progress","Completed"],
-    default:"Pending"
-  },
-
-  comments:[commentSchema],
-
-  createdAt:{
-    type:Date,
-    default:Date.now
-  }
-
+projectSchema.virtual("pendingPayment").get(function () {
+  return this.totalBudget - this.paid;
 });
 
-export default mongoose.model("Project",projectSchema);
+projectSchema.virtual("completionPercent").get(function () {
+  if (!this.milestones.length) return 0;
+  const done = this.milestones.filter((m) => m.status === "completed" || m.status === "paid").length;
+  return Math.round((done / this.milestones.length) * 100);
+});
+
+projectSchema.set("toJSON", { virtuals: true });
+
+export default mongoose.model("Project", projectSchema);
