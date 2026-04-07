@@ -29,6 +29,29 @@ export const getUsers = async (req, res, next) => {
     res.json(users);
   } catch (error) { next(error); }
 };
+export const createUser = async (req, res, next) => {
+  try {
+    const {
+      name, email, password, role, phone,
+      department, employeeId, status, position,
+      joinDate, address, permissions, notes
+    } = req.body;
+
+    if (await User.findOne({ email }))
+      return res.status(400).json({ message: "Email already registered." });
+
+    const user = await User.create({
+      name, email, password, role, phone,
+      department, employeeId, status, position,
+      joinDate, address, permissions, notes,
+      isActive: true
+    });
+
+    res.status(201).json({ success: true, message: "User created successfully.", user });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getUserById = async (req, res, next) => {
   try {

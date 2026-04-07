@@ -96,7 +96,6 @@
   width: auto;
   object-fit: contain;
   display: block;
-  margin-left: 4px;
 }
 
 /* ══════════════════════════════════════
@@ -146,14 +145,13 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: #94a3b8;
+  color: #000;
   border-left: 1px solid #e8ecf5;
   transition: all 150ms;
   flex-shrink: 0;
 }
 .search-button:hover {
   background: #eff6ff;
-  color: #4f6ef7;
 }
 .search-button svg { font-size: 18px; }
 
@@ -414,7 +412,18 @@
   margin-bottom: 4px;
   word-break: break-all;
 }
+.menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 15px;
+  display: flex;
+  align-items: center;
+}
 
+.menu-btn svg {
+  font-size: 28px;
+}
 .user-wrapper .dropdown-menu button {
   display: flex;
   align-items: center;

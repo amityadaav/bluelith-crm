@@ -59,12 +59,53 @@ export const getLeads = async (req, res, next) => {
   } catch (error) { next(error); }
 };
 
+// export const createLead = async (req, res, next) => {
+//   try {
+//     const lead = await Lead.create({ ...req.body, assignedTo: req.body.assignedTo || req.user._id });
+//     await log("lead_created", `New lead "${lead.name}" was created`, req.user._id, req.user.name, lead._id);
+//     res.status(201).json({ success: true, lead });
+//   } catch (error) { next(error); }
+// };
 export const createLead = async (req, res, next) => {
   try {
-    const lead = await Lead.create({ ...req.body, assignedTo: req.body.assignedTo || req.user._id });
-    await log("lead_created", `New lead "${lead.name}" was created`, req.user._id, req.user.name, lead._id);
-    res.status(201).json({ success: true, lead });
-  } catch (error) { next(error); }
+    const isPublic = !req.user;
+
+    const lead = await Lead.create({
+      ...req.body,
+
+      // ✅ Fix assignedTo crash
+      assignedTo: req.body.assignedTo || req.user?._id || null,
+
+      // ✅ Fix enum issue (must match model exactly)
+      source: req.body.source || (isPublic ? "website" : "other"),
+
+      // ✅ Optional: normalize fields
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      notes: req.body.message || req.body.notes,
+    });
+
+    // ✅ Only log if CRM user
+    if (req.user) {
+      await log(
+        "lead_created",
+        `New lead "${lead.name}" was created`,
+        req.user._id,
+        req.user.name,
+        lead._id
+      );
+    }
+
+    res.status(201).json({
+      success: true,
+      lead,
+    });
+
+  } catch (error) {
+    console.error("❌ ERROR:", error.message);
+    next(error);
+  }
 };
 
 export const getLeadById = async (req, res, next) => {

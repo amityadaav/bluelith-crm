@@ -112,6 +112,7 @@ import projectRoutes   from "./routes/projectRoutes.js";
 import notifRoutes     from "./routes/notifications.js";
 import analyticsRoutes from "./routes/analytics.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
 
 const app = express();
 
@@ -133,7 +134,7 @@ app.use("/api/projects",      projectRoutes);
 app.use("/api/notifications",  notifRoutes);
 app.use("/api/analytics",     analyticsRoutes);
 app.use("/api/dashboard",     dashboardRoutes);
-
+app.use("/api/tasks", taskRoutes); 
 app.get("/api/health", (_, res) =>
   res.json({ status: "ok", timestamp: new Date().toISOString() })
 );
