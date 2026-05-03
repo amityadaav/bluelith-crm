@@ -382,7 +382,7 @@ import Login              from "./pages/Login";
 import Dashboard          from "./pages/Dashboard";
 import EmployeeDashboard  from "./pages/EmployeeDashboard";
 import SalesDashboard     from "./pages/SalesDashboard";
-import DeveloperDashboard from "./pages/DeveloperDashboard";
+import DeveloperDashboard from "./pages/Developerdashboard";
 import HRDashboard        from "./pages/HRDashboard";
 import Leads              from "./pages/Leads";
 import Clients            from "./pages/Clients";
