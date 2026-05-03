@@ -668,22 +668,23 @@ function Navbar({ isDarkMode, handleDrawerToggle }) {
         </div>
 
         {/* SEARCH */}
-        <div className="navbar-center">
-          <form className="search-form" onSubmit={handleSearch}>
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Search leads, tasks, contacts..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-              aria-label="Search"
-            />
-            <button type="submit" className="search-button" aria-label="Submit search">
-              <SearchIcon />
-            </button>
-          </form>
-        </div>
+{/* SEARCH */}
+<div className="navbar-center">
+  <form className="search-form" onSubmit={handleSearch}>
+    <input
+      ref={searchInputRef}
+      type="text"
+      placeholder="Search leads, tasks, contacts..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="search-input"
+      aria-label="Search"
+    />
+    <button type="submit" className="search-button" aria-label="Submit search">
+      <SearchIcon className="search-icon" />
+    </button>
+  </form>
+</div>
 
         {/* RIGHT */}
         <div className="navbar-right">

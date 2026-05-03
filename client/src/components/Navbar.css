@@ -101,6 +101,9 @@
 /* ══════════════════════════════════════
    CENTER — Search
 ══════════════════════════════════════ */
+/* ══════════════════════════════════════
+   CENTER — Search
+══════════════════════════════════════ */
 .navbar-center {
   flex: 1;
   max-width: 480px;
@@ -110,17 +113,17 @@
 .search-form {
   display: flex;
   align-items: center;
-  background: #f4f6fb;
-  border: 1px solid #e8ecf5;
-  border-radius: 10px;
+  background: #ffffff;
+  border: 1.5px solid #d1d5db;
+  border-radius: 999px;        /* pill shape */
   overflow: hidden;
-  height: 38px;
+  height: 40px;
   transition: all 200ms;
 }
 .search-form:focus-within {
+  border-color: #0f172a;
+  box-shadow: none;
   background: #ffffff;
-  border-color: #4f6ef7;
-  box-shadow: 0 0 0 3px rgba(79,110,247,0.10);
 }
 
 .search-input {
@@ -128,33 +131,30 @@
   border: none;
   background: transparent;
   outline: none;
-  padding: 0 14px;
-  font-size: 13px;
+  padding: 0 18px;
+  font-size: 13.5px;
   font-family: 'DM Sans', sans-serif;
   color: #0f172a;
   height: 100%;
+  letter-spacing: 0.01em;
 }
-.search-input::placeholder { color: #94a3b8; }
+.search-input::placeholder {
+  color: #6b7280;
+  font-style: normal;
+}
 
-.search-button {
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: #000;
-  border-left: 1px solid #e8ecf5;
-  transition: all 150ms;
-  flex-shrink: 0;
+button[type="submit"].search-button {
+width: 10%; padding: 13px; background: #ffffff; color: white; border: none; border-radius: 8px%; font-weight: 700; font-size: 14px; font-family: inherit; cursor: pointer; transition: all 0.25s ease; letter-spacing: 1px;
 }
 .search-button:hover {
-  background: #eff6ff;
+  background: #f3f4f6;
 }
-.search-button svg { font-size: 18px; }
-
+.search-button svg {
+  font-size: 18px;
+}
+.search-icon {
+  color: #2a0f14;
+}
 /* ══════════════════════════════════════
    RIGHT — Icons + User
 ══════════════════════════════════════ */
