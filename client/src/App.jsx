@@ -383,7 +383,7 @@ import Dashboard          from "./pages/Dashboard";
 import EmployeeDashboard  from "./pages/EmployeeDashboard";
 import SalesDashboard     from "./pages/SalesDashboard";
 import DeveloperDashboard from "./pages/Developerdashboard";
-import HRDashboard        from "./pages/HRDashboard";
+import HRDashboard        from "./pages/Hrdashboard";
 import Leads              from "./pages/Leads";
 import Clients            from "./pages/Clients";
 import Projects           from "./pages/Projects";
