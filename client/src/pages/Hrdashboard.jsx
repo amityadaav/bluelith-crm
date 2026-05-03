@@ -6,7 +6,7 @@ import {
   Mail, Phone, Calendar, CheckCircle, AlertCircle,
 } from "lucide-react";
 import api from "../services/api";
-import "./HRDashboard.css";
+import "./Hrdashboard.css";
 
 function HRDashboard() {
   const navigate = useNavigate();

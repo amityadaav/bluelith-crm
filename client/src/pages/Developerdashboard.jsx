@@ -6,7 +6,7 @@ import {
   AlertCircle, Terminal, Layers, Tag,
 } from "lucide-react";
 import api from "../services/api";
-import "./DeveloperDashboard.css";
+import "./Developerdashboard.css";
 
 function DeveloperDashboard() {
   const navigate = useNavigate();
