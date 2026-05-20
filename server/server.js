@@ -1,4 +1,3 @@
-
 import "dotenv/config";
 import { validateEnv } from "./config/env.js";
 
@@ -10,7 +9,6 @@ import helmet          from "helmet";
 import cors            from "cors";
 import morgan          from "morgan";
 import cookieParser    from "cookie-parser";
-import mongoSanitize   from "express-mongo-sanitize";
 
 import connectDB       from "./config/db.js";
 import { apiLimiter }  from "./middleware/rateLimiter.js";
@@ -31,7 +29,27 @@ const isDev = process.env.NODE_ENV !== "production";
 
 // ─── Security middleware ──────────────────────────────────────────────────────
 app.use(helmet());
-app.use(mongoSanitize()); // Prevent MongoDB operator injection
+
+// ─── MongoDB injection sanitizer (Express v5 compatible) ─────────────────────
+// Replaces express-mongo-sanitize which is incompatible with Express v5
+// (req.query is a read-only getter in Express v5)
+const sanitizeObject = (obj) => {
+  if (!obj || typeof obj !== "object") return;
+  for (const key of Object.keys(obj)) {
+    if (key.startsWith("$") || key.includes(".")) {
+      delete obj[key];
+    } else {
+      sanitizeObject(obj[key]);
+    }
+  }
+};
+
+app.use((req, _res, next) => {
+  sanitizeObject(req.body);
+  sanitizeObject(req.params);
+  // ⚠️  Skipping req.query — Express v5 made it a read-only getter
+  next();
+});
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5173")
@@ -48,7 +66,7 @@ app.use(cors({
 }));
 
 // ─── Request parsing ──────────────────────────────────────────────────────────
-app.use(express.json({ limit: "10kb" }));         // Limit body size
+app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 app.use(cookieParser());
 
