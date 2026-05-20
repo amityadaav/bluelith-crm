@@ -20,7 +20,6 @@ body {
 .main-content {
   flex: 1;
   margin-left: 68px; /* collapsed sidebar width */
-  margin-top: 60px;  /* navbar height */
   transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: calc(100vh - 60px);
   background: #f8fafc;

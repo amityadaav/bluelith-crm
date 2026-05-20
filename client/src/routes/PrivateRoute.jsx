@@ -1,11 +1,26 @@
+// import { useContext } from "react";
+// import { Navigate } from "react-router-dom";
+// import { AuthContext } from "../AuthContext";
+
+// const PrivateRoute = ({ children }) => {
+//   const { user } = useContext(AuthContext);
+
+//   return user ? children : <Navigate to="/login" />;
+// };
+
+// export default PrivateRoute;
+
 import { useContext } from "react";
-import { Navigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
+import { Navigate, useLocation } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
-const PrivateRoute = ({ children }) => {
+export default function PrivateRoute({ children }) {
   const { user } = useContext(AuthContext);
+  const location = useLocation();
 
-  return user ? children : <Navigate to="/login" />;
-};
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
-export default PrivateRoute;
+  return children;
+}

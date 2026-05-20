@@ -283,7 +283,7 @@ h1, h2, h3 {
 }
 
 .kpi-value {
-  font-size: 1.75rem;
+  font-size: 24px;
   font-weight: 700;
   color: var(--gray-800);
   line-height: 1.2;

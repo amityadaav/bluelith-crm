@@ -49,69 +49,149 @@
 
 // export default api;
 
+// import axios from "axios";
+
+// // ─── Base Instance ────────────────────────────────────────────────────────────
+// const api = axios.create({
+//   baseURL:
+//     import.meta.env.VITE_API_URL ||
+//     "https://bluelith-crm.onrender.com/api",
+//   timeout: 15000,
+//   headers: {
+//     "Content-Type": "application/json",
+//   },
+//   withCredentials: true,
+// });
+
+// // ─── Request Interceptor: Attach JWT ─────────────────────────────────────────
+// api.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
+
+// // ─── Response Interceptor: Handle Errors Globally ────────────────────────────
+// api.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     const { response } = error;
+
+//     // Token expired or invalid → force logout
+//     if (response?.status === 401) {
+//       localStorage.removeItem("token");
+//       localStorage.removeItem("user");
+//       // Redirect to login (adjust path as needed)
+//       if (window.location.pathname !== "/login") {
+//         window.location.href = "/login";
+//       }
+//     }
+
+//     // Forbidden
+//     if (response?.status === 403) {
+//       console.warn("Access denied:", response.data?.message);
+//     }
+
+//     // Server error
+//     if (response?.status >= 500) {
+//       console.error("Server error:", response.data?.message);
+//     }
+
+//     // Normalize error so callers can always read error.message
+//     const message =
+//       response?.data?.message ||
+//       error.message ||
+//       "Something went wrong. Please try again.";
+
+//     return Promise.reject(new Error(message));
+//   }
+// );
+
+// // ─── Auth Helpers ─────────────────────────────────────────────────────────────
+// export const authService = {
+//   login: async (email, password) => {
+//     const res = await api.post("/auth/login", { email, password });
+//     const { token, user } = res.data;
+//     localStorage.setItem("token", token);
+//     localStorage.setItem("user", JSON.stringify(user));
+//     return { token, user };
+//   },
+
+//   logout: () => {
+//     localStorage.removeItem("token");
+//     localStorage.removeItem("user");
+//     window.location.href = "/login";
+//   },
+
+//   getUser: () => {
+//     try {
+//       return JSON.parse(localStorage.getItem("user"));
+//     } catch {
+//       return null;
+//     }
+//   },
+
+//   isAuthenticated: () => !!localStorage.getItem("token"),
+
+//   isAdmin: () => {
+//     const user = authService.getUser();
+//     return user?.role === "admin";
+//   },
+// };
+
+// // ─── Default Export ───────────────────────────────────────────────────────────
+// export default api;
+
+
 import axios from "axios";
 
-// ─── Base Instance ────────────────────────────────────────────────────────────
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
 const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL ||
-    "https://bluelith-crm.onrender.com/api",
-  timeout: 15000,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL:        BASE_URL,
+  timeout:        15000,
   withCredentials: true,
+  headers: { "Content-Type": "application/json" },
 });
 
-// ─── Request Interceptor: Attach JWT ─────────────────────────────────────────
+// ─── Request: attach JWT ──────────────────────────────────────────────────────
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// ─── Response Interceptor: Handle Errors Globally ────────────────────────────
+// ─── Response: global error handling ─────────────────────────────────────────
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const { response } = error;
+    const status  = error.response?.status;
+    const message = error.response?.data?.message || error.message || "Something went wrong.";
 
-    // Token expired or invalid → force logout
-    if (response?.status === 401) {
+    if (status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      // Redirect to login (adjust path as needed)
       if (window.location.pathname !== "/login") {
         window.location.href = "/login";
       }
     }
 
-    // Forbidden
-    if (response?.status === 403) {
-      console.warn("Access denied:", response.data?.message);
+    if (status === 403) {
+      console.warn("Access denied:", message);
     }
-
-    // Server error
-    if (response?.status >= 500) {
-      console.error("Server error:", response.data?.message);
-    }
-
-    // Normalize error so callers can always read error.message
-    const message =
-      response?.data?.message ||
-      error.message ||
-      "Something went wrong. Please try again.";
 
     return Promise.reject(new Error(message));
   }
 );
 
-// ─── Auth Helpers ─────────────────────────────────────────────────────────────
+// ─── Auth helpers ─────────────────────────────────────────────────────────────
 export const authService = {
   login: async (email, password) => {
     const res = await api.post("/auth/login", { email, password });
@@ -120,28 +200,16 @@ export const authService = {
     localStorage.setItem("user", JSON.stringify(user));
     return { token, user };
   },
-
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     window.location.href = "/login";
   },
-
   getUser: () => {
-    try {
-      return JSON.parse(localStorage.getItem("user"));
-    } catch {
-      return null;
-    }
+    try { return JSON.parse(localStorage.getItem("user")); }
+    catch { return null; }
   },
-
   isAuthenticated: () => !!localStorage.getItem("token"),
-
-  isAdmin: () => {
-    const user = authService.getUser();
-    return user?.role === "admin";
-  },
 };
 
-// ─── Default Export ───────────────────────────────────────────────────────────
 export default api;
