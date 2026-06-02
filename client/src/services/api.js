@@ -147,13 +147,81 @@
 // export default api;
 
 
+// import axios from "axios";
+
+// const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+// const api = axios.create({
+//   baseURL:        BASE_URL,
+//   timeout:        15000,
+//   withCredentials: true,
+//   headers: { "Content-Type": "application/json" },
+// });
+
+// // ─── Request: attach JWT ──────────────────────────────────────────────────────
+// api.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem("token");
+//     if (token) config.headers.Authorization = `Bearer ${token}`;
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
+
+// // ─── Response: global error handling ─────────────────────────────────────────
+// api.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     const status  = error.response?.status;
+//     const message = error.response?.data?.message || error.message || "Something went wrong.";
+
+//     if (status === 401) {
+//       localStorage.removeItem("token");
+//       localStorage.removeItem("user");
+//       if (window.location.pathname !== "/login") {
+//         window.location.href = "/login";
+//       }
+//     }
+
+//     if (status === 403) {
+//       console.warn("Access denied:", message);
+//     }
+
+//     return Promise.reject(new Error(message));
+//   }
+// );
+
+// // ─── Auth helpers ─────────────────────────────────────────────────────────────
+// export const authService = {
+//   login: async (email, password) => {
+//     const res = await api.post("/auth/login", { email, password });
+//     const { token, user } = res.data;
+//     localStorage.setItem("token", token);
+//     localStorage.setItem("user", JSON.stringify(user));
+//     return { token, user };
+//   },
+//   logout: () => {
+//     localStorage.removeItem("token");
+//     localStorage.removeItem("user");
+//     window.location.href = "/login";
+//   },
+//   getUser: () => {
+//     try { return JSON.parse(localStorage.getItem("user")); }
+//     catch { return null; }
+//   },
+//   isAuthenticated: () => !!localStorage.getItem("token"),
+// };
+
+// export default api;
+
+
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const api = axios.create({
-  baseURL:        BASE_URL,
-  timeout:        15000,
+  baseURL:         BASE_URL,
+  timeout:         60000,   // ✅ FIX: was 15000 — Render free tier needs up to 50s to cold-start
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
