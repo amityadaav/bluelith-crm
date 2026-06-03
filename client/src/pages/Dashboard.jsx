@@ -829,7 +829,7 @@ function Dashboard() {
       <div className="dashboard-header">
         <div className="header-left">
           <h1 className="page-title">
-            <Activity size={28} /> Admin Dashboard
+            <Activity /> Admin Dashboard
           </h1>
           <p className="header-date">
             <Calendar size={16} />
